@@ -364,15 +364,22 @@ export default function Dashboard({
       {activeView === "timetable" ? (
         <ClassScheduleTable
           classes={metrics.classes}
+          rooms={metrics.rooms}
           currentRecordId={metrics.meta?.recordId}
           currentDate={metrics.meta?.dataDate}
           history={history}
+          onApplyOptimization={onApplyOptimization}
           onSelectRecord={onSelectRecord}
         />
       ) : null}
 
       {activeView === "availability" ? (
-        <RoomAvailabilityPanel rooms={metrics.rooms} classes={metrics.classes} />
+        <RoomAvailabilityPanel
+          rooms={metrics.rooms}
+          classes={metrics.classes}
+          currentRecordId={metrics.meta?.recordId}
+          onApplyOptimization={onApplyOptimization}
+        />
       ) : null}
 
       {activeView === "optimize" ? (

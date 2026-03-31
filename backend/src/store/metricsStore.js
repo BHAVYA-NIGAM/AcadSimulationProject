@@ -177,6 +177,30 @@ export async function applyOptimizationToRecord({
     throw error;
   }
 
+  const selectedEntry = dataset.timetable[entryIndex];
+  const hasConflict = dataset.timetable.some((entry, index) => {
+    if (index === entryIndex) {
+      return false;
+    }
+
+    if (entry.roomId !== toRoom || entry.day !== selectedEntry.day) {
+      return false;
+    }
+
+    return (
+      toMinutes(selectedEntry.startTime) < toMinutes(entry.endTime) &&
+      toMinutes(selectedEntry.endTime) > toMinutes(entry.startTime)
+    );
+  });
+
+  if (hasConflict) {
+    const error = new Error(
+      `Room ${toRoom} already has a class assigned during ${selectedEntry.day} ${selectedEntry.startTime}-${selectedEntry.endTime}.`,
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
   const updatedTimetable = dataset.timetable.map((entry, index) =>
     index === entryIndex ? { ...entry, roomId: toRoom } : entry,
   );

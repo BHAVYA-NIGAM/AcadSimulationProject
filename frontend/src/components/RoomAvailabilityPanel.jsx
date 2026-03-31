@@ -1,4 +1,6 @@
+import ClassShiftPanel from "./ClassShiftPanel.jsx";
 import { useEffect, useMemo, useState } from "react";
+import RoomShiftControl from "./RoomShiftControl.jsx";
 
 const FLOOR_ORDER = ["Ground", "First", "Second", "Third"];
 
@@ -61,7 +63,12 @@ function isUnassignedRoom(roomId) {
   return String(roomId || "").trim().toUpperCase() === "TBA";
 }
 
-export default function RoomAvailabilityPanel({ rooms, classes }) {
+export default function RoomAvailabilityPanel({
+  rooms,
+  classes,
+  currentRecordId,
+  onApplyOptimization,
+}) {
   const dayOptions = useMemo(
     () =>
       [...new Set((classes || []).map((classItem) => classItem.day).filter(Boolean))].sort(),
@@ -196,6 +203,14 @@ export default function RoomAvailabilityPanel({ rooms, classes }) {
         </div>
       ) : (
         <>
+          <ClassShiftPanel
+            classes={(classes || []).filter((classItem) => classItem.day === selectedDay)}
+            rooms={rooms}
+            recordId={currentRecordId}
+            title="Shift Any Class"
+            onApplied={onApplyOptimization}
+          />
+
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             <div className="rounded-[24px] border border-emerald-400/20 bg-emerald-500/10 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-emerald-100/80">
@@ -248,6 +263,14 @@ export default function RoomAvailabilityPanel({ rooms, classes }) {
                     <p className="mt-1 text-slate-300">
                       {classItem.studentCount} students • room pending
                     </p>
+
+                    <RoomShiftControl
+                      classItem={classItem}
+                      rooms={rooms}
+                      classes={classes}
+                      recordId={currentRecordId}
+                      onApplied={onApplyOptimization}
+                    />
                   </div>
                 ))}
               </div>
@@ -302,6 +325,14 @@ export default function RoomAvailabilityPanel({ rooms, classes }) {
                           {classItem.studentCount} students • {Math.round(classItem.occupancy * 100)}%
                           {" "}occupancy
                         </p>
+
+                        <RoomShiftControl
+                          classItem={classItem}
+                          rooms={rooms}
+                          classes={classes}
+                          recordId={currentRecordId}
+                          onApplied={onApplyOptimization}
+                        />
                       </div>
                     ))}
                   </div>

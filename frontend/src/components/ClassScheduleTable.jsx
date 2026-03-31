@@ -1,3 +1,6 @@
+import ClassShiftPanel from "./ClassShiftPanel.jsx";
+import RoomShiftControl from "./RoomShiftControl.jsx";
+
 function statusClasses(status) {
   if (status === "overcrowded") {
     return "border-rose-400/30 bg-rose-500/10 text-rose-100";
@@ -42,9 +45,11 @@ function groupByFloor(classes) {
 
 export default function ClassScheduleTable({
   classes,
+  rooms,
   currentRecordId,
   currentDate,
   history,
+  onApplyOptimization,
   onSelectRecord,
 }) {
   if (!classes?.length) {
@@ -104,6 +109,14 @@ export default function ClassScheduleTable({
       </div>
 
       <div className="space-y-6">
+        <ClassShiftPanel
+          classes={classes}
+          rooms={rooms}
+          recordId={currentRecordId}
+          title="Shift Any Class"
+          onApplied={onApplyOptimization}
+        />
+
         {groupedClasses.map((group) => (
           <section key={group.floor} className="rounded-[24px] border border-white/10 bg-white/5 p-4">
             <div className="mb-4 flex items-center justify-between">
@@ -149,6 +162,14 @@ export default function ClassScheduleTable({
                       {Math.round(classItem.occupancy * 100)}% occupancy
                     </p>
                   </div>
+
+                  <RoomShiftControl
+                    classItem={classItem}
+                    rooms={rooms}
+                    classes={classes}
+                    recordId={currentRecordId}
+                    onApplied={onApplyOptimization}
+                  />
                 </div>
               ))}
             </div>

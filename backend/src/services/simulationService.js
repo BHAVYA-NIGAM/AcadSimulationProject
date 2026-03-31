@@ -122,6 +122,7 @@ function buildOptimizableClass(classItem, roomsById) {
 
   return {
     ...classItem,
+    sessionKey: buildSessionKey(classItem),
     roomId: room.roomId,
     roomNameEn: room.roomNameEn || classItem.roomNameEn || "",
     floor: room.floor || classItem.floor || "",
@@ -327,7 +328,7 @@ function moveClassToRoom(classItem, targetRoom, state) {
 
 function canPlaceClassInRoom(roomId, classItem, schedulesByRoomId, minimumGapMinutes) {
   const daySchedule = getDaySchedule(schedulesByRoomId, roomId, classItem.day)
-    .filter((scheduledClass) => scheduledClass.classId !== classItem.classId);
+    .filter((scheduledClass) => scheduledClass.sessionKey !== classItem.sessionKey);
 
   let insertAt = daySchedule.length;
 
@@ -378,8 +379,18 @@ function removeClassFromSchedule(schedulesByRoomId, roomId, classItem) {
   const daySchedule = roomSchedule.get(classItem.day) || [];
   roomSchedule.set(
     classItem.day,
-    daySchedule.filter((scheduledClass) => scheduledClass.classId !== classItem.classId),
+    daySchedule.filter((scheduledClass) => scheduledClass.sessionKey !== classItem.sessionKey),
   );
+}
+
+function buildSessionKey(classItem) {
+  return [
+    classItem.classId,
+    classItem.day,
+    classItem.startTime,
+    classItem.endTime,
+    classItem.roomId,
+  ].join("|");
 }
 
 function getDaySchedule(schedulesByRoomId, roomId, day) {
